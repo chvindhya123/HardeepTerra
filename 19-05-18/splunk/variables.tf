@@ -1,0 +1,139 @@
+variable "vpc_id" { default = "vpc-5f845524"}
+variable "stack_name" { default = "Splunk"}
+variable "private_subnets" { default = ["subnet-7e370d1a", "subnet-19f7a144", "subnet-8bd680b4"]}
+#variable "subnets" { default = ["subnet-7e370d1a", "subnet-19f7a144", "subnet-8bd680b4"]}
+variable "subnets" { default = {
+   shc = ["subnet-7e370d1a", "subnet-19f7a144", "subnet-8bd680b4"]
+   hf = ["subnet-7e370d1a", "subnet-19f7a144"]
+   dep = ["subnet-7e370d1a"]
+   lm = ["subnet-7e370d1a"]
+   cm = ["subnet-7e370d1a"]
+   cp_site1 = ["subnet-19f7a144"]
+   cp_site2 = ["subnet-8bd680b4"]
+   cp_site3 = ["subnet-7e370d1a"]
+}}
+variable "ports" { default = { 
+   https = "443"
+   ssh = "22"
+   tcp_8089 = "8089"
+   tcp_9997 = "9997"
+   tcp_9887 = "9887"
+}}
+variable "shc" { 
+   type = "map"
+   default = {
+#      vpc_id = "${var.vpc_id}"
+      vpc_id = "vpc-5f845524"
+      tier = "SearchHeadCluster"
+      short = "SHC"
+      stack = "Splunk"
+      ami = "ami-467ca739"
+      type = "t2.micro"
+      lb_type = "application"
+      key_pair = "New_KeyPair"
+      root_vol_type = "gp2"
+      root_vol_size = "10"
+      data_vol_type = "gp2" 
+      data_vol_size = "0"
+      lb_port = "80"
+      lb_protocol = "HTTP"
+      asg_max = 3
+      asg_min = 0
+      asg_cur = 1
+}}
+variable "hf" { default = {
+   vpc_id = "vpc-5f845524"
+   tier = "HeavyForwarder"
+   short = "HF"
+   stack = "Splunk"
+   ami = "ami-467ca739"
+   type = "t2.micro"
+   lb_type = "network"
+   key_pair = "New_KeyPair"
+   root_vol_type = "gp2"
+   root_vol_size = "10"
+   data_vol_type = "gp2"
+   data_vol_size = "10"
+   lb_port = "9997"
+   lb_protocol = "TCP"
+   asg_max = 1
+   asg_min = 0
+   asg_cur = 0
+}}
+variable "dep" { default = {
+   vpc_id = "vpc-5f845524"
+   tier = "Deployer"
+   short = "Dep"
+   stack = "Splunk"
+   ami = "ami-467ca739"
+   type = "t2.micro"
+   key_pair = "New_KeyPair"
+   root_vol_type = "gp2"
+   root_vol_size = "10"
+   data_vol_type = "gp2"
+   data_vol_size = "10"
+   asg_max = 1
+   asg_min = 0
+   asg_cur = 0
+}}
+variable "cm" { default = {
+   vpc_id = "vpc-5f845524"
+   tier = "ClusterMaster"
+   short = "CM"
+   stack = "Splunk"
+   ami = "ami-467ca739"
+   type = "t2.micro"
+   key_pair = "New_KeyPair"
+   root_vol_type = "gp2"
+   root_vol_size = "10"
+   data_vol_type = "gp2"
+   data_vol_size = "10"
+   asg_max = 1
+   asg_min = 0
+   asg_cur = 0
+}}
+variable "lm" { default = {
+   vpc_id = "vpc-5f845524"
+   tier = "LicenceMaster"
+   short = "LM"
+   stack = "Splunk"
+   ami = "ami-467ca739"
+   type = "t2.micro"
+   key_pair = "New_KeyPair"
+   root_vol_type = "gp2"
+   root_vol_size = "10"
+   data_vol_type = "gp2"
+   data_vol_size = "10"
+   asg_max = 1
+   asg_min = 0
+   asg_cur = 0
+}}
+
+variable "cp" { default = {
+   tier = "ClusterPeer"
+   short = "CP"
+   vpc_id = "vpc-5f845524"
+   stack = "Splunk"
+   ami = "ami-467ca739"
+   type = "t2.micro"
+   key_pair = "New_KeyPair"
+   root_vol_type = "gp2"
+   root_vol_size = "10"
+   data_vol_type = "gp2"
+   data_vol_size = "10"
+   asg_max = 1
+   asg_min = 0
+   asg_cur = 0   
+}}
+variable "cps1" { default = {
+   tier = "ClusterPeerSite1"
+   short = "CPS1"
+}}
+variable "cps2" { default = {
+   tier = "ClusterPeerSite2"
+   short = "CPS2"
+}}
+variable "cps3" { default = {
+   tier = "ClusterPeerSite3"
+   short = "CPS3"
+}}

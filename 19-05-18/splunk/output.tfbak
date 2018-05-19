@@ -1,0 +1,24 @@
+output "SearchHead_ELB_SG_ID" {
+   value = "${module.SHC_ALB_SG.security_group_id}"
+}
+output "SearchHead_ASG_SG_ID" {
+   value = "${module.SHC_ASG_SG.security_group_id}"
+}
+
+#output "SearchHead_ALB_ARN" {
+#  value = "${module.ALB_SearchHead.elb_arn}"
+#}
+
+output "SearchHead_ASG_ID" {
+  value = "${aws_autoscaling_group.SHC_ASG.id}"
+}
+
+#output "SearchHead_TG_ARN" {
+#  value = "${aws_lb_target_group.SHC_LB_TG.arn}"
+#}
+output "SearchHead_LC_Name" {
+  value = "${aws_launch_configuration.SHC_LC.name}"
+}
+#output "SearchHead_Listener_ARN" {
+#  value = "${aws_lb_listener.SHC_LB_LS.arn}"
+#}

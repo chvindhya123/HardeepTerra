@@ -1,0 +1,97 @@
+module "CPS3_ASG_SG" {
+   source = "../modules/security_group"
+   com = "ASG"
+   vars = "${merge(var.cp, var.cps3)}"
+}
+module "CPS3_ASG" {
+   source = "../modules/autoscaling_group"
+   vars = "${merge(var.cp, var.cps3)}"
+   security_groups = ["${module.CPS3_ASG_SG.security_group_id}"]
+#   user_data = "Hello"
+   vpc_subnets = "${var.subnets["cp_site3"]}"
+}
+
+module "CPS3_ASG_SG_InRule_22" {
+   source = "../modules/security_group_rule_by_cidr"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["ssh"]}"
+   to_port = "${var.ports["ssh"]}"
+   source_cidr_blocks = ["0.0.0.0/0"]
+}     
+module "CPS3_ASG_SG_InRule_Self" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "-1"
+   from_port = "0"
+   to_port = "65535"
+   source_sg_id = "${module.CPS3_ASG_SG.security_group_id}"
+}  
+#module "CPS3_ASG_SG_InRule_9997_HF" {
+#   source = "../modules/security_group_rule_by_sg"
+#   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+#   rule_type = "ingress"
+#   protocol = "tcp"
+#   from_port = "${var.ports["tcp_9997"]}"
+#   to_port = "${var.ports["tcp_9997"]}"
+#   source_sg_id = "${module.HF_ASG_SG.security_group_id}"
+#} 
+module "CPS3_ASG_SG_InRule_8089_SHC" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.SHC_ASG_SG.security_group_id}"
+} 
+module "CPS3_ASG_SG_InRule_9887_S2" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9887"]}"
+   to_port = "${var.ports["tcp_9887"]}"
+   source_sg_id = "${module.CPS2_ASG_SG.security_group_id}"
+} 
+module "CPS3_ASG_SG_InRule_9887_S1" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9887"]}"
+   to_port = "${var.ports["tcp_9887"]}"
+   source_sg_id = "${module.CPS1_ASG_SG.security_group_id}"
+} 
+ 
+module "CPS3_ASG_SG_OutRule_8089_LM" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9887"]}"
+   to_port = "${var.ports["tcp_9887"]}"
+   source_sg_id = "${module.LM_ASG_SG.security_group_id}"
+}  
+module "CPS3_ASG_SG_OutRule_9887_S2" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9887"]}"
+   to_port = "${var.ports["tcp_9887"]}"
+   source_sg_id = "${module.CPS2_ASG_SG.security_group_id}"
+} 
+module "CPS3_ASG_SG_OutRule_9887_S1" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CPS3_ASG_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9887"]}"
+   to_port = "${var.ports["tcp_9887"]}"
+   source_sg_id = "${module.CPS1_ASG_SG.security_group_id}"
+} 
+
+

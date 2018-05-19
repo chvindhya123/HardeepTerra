@@ -1,0 +1,88 @@
+module "LM_ASG_SG" {
+   source = "../modules/security_group"
+   com = "ASG"
+   vars = "${var.lm}"
+}
+module "LM_ASG" {
+   source = "../modules/autoscaling_group"
+   vars = "${var.lm}"
+   security_groups = ["${module.LM_ASG_SG.security_group_id}"]
+#   user_data = "Hello"
+   vpc_subnets = "${var.subnets["lm"]}"
+}
+
+module "LM_ASG_SG_InRule_8089_SHC" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.SHC_ASG_SG.security_group_id}"
+} 
+module "LM_ASG_SG_InRule_8089_Dep" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.Dep_ASG_SG.security_group_id}"
+} 
+module "LM_ASG_SG_InRule_8089_CM" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.CM_ASG_SG.security_group_id}"
+} 
+module "LM_ASG_SG_InRule_8089_CPS1" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.CPS1_ASG_SG.security_group_id}"
+} 
+module "LM_ASG_SG_InRule_8089_CPS2" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.CPS2_ASG_SG.security_group_id}"
+} 
+module "LM_ASG_SG_InRule_8089_CPS3" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.CPS3_ASG_SG.security_group_id}"
+} 
+module "LM_ASG_SG_InRule_22" {
+   source = "../modules/security_group_rule_by_cidr"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["ssh"]}"
+   to_port = "${var.ports["ssh"]}"
+   source_cidr_blocks = ["0.0.0.0/0"]
+}     
+module "LM_ASG_SG_InRule_Self" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.LM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "-1"
+   from_port = "0"
+   to_port = "65535"
+   source_sg_id = "${module.LM_ASG_SG.security_group_id}"
+}  
+
+
+# ingress on 8089 from cluster peers 3 sites

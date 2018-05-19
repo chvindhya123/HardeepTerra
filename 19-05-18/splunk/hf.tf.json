@@ -1,0 +1,80 @@
+module "HF_ASG_SG" {
+   source = "../modules/security_group"
+   com = "ASG"
+   vars = "${var.hf}"
+}
+module "HeavyForwarder_NLB" {
+   source = "../modules/application_load_balancer"
+   subnet_ids = "${var.subnets["hf"]}"
+#   security_groups_ids = ["${module.HF_NLB_SG.security_group_id}"]
+   vars = "${var.hf}"
+}
+module "HF_ASG" {
+   source = "../modules/autoscaling_group"
+   vars = "${var.hf}"
+   security_groups = ["${module.HF_ASG_SG.security_group_id}"]
+#   user_data = "Hello"
+   vpc_subnets = "${var.subnets["hf"]}"
+   target_group_arns = ["${module.HeavyForwarder_NLB.tg_arn}"]
+}
+
+
+module "HF_ASG_SG_InRule_9997" {
+   source = "../modules/security_group_rule_by_cidr"
+   sg_id  = "${module.HF_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9997"]}"
+   to_port = "${var.ports["tcp_9997"]}"
+   source_cidr_blocks = ["0.0.0.0/0"]
+} 
+module "HF_ASG_SG_InRule_22" {
+   source = "../modules/security_group_rule_by_cidr"
+   sg_id  = "${module.HF_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["ssh"]}"
+   to_port = "${var.ports["ssh"]}"
+   source_cidr_blocks = ["0.0.0.0/0"]
+}     
+module "HF_ASG_SG_InRule_Self" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.HF_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "-1"
+   from_port = "0"
+   to_port = "65535"
+   source_sg_id = "${module.HF_ASG_SG.security_group_id}"
+}  
+    
+module "HF_ASG_SG_OutRule_8089_CM" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.HF_ASG_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.CM_ASG_SG.security_group_id}"
+}     
+module "HF_ASG_SG_OutRule_9997_CPS1" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.HF_ASG_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9997"]}"
+   to_port = "${var.ports["tcp_9997"]}"
+   source_sg_id = "${module.CPS1_ASG_SG.security_group_id}"
+}        
+module "HF_ASG_SG_OutRule_9997_CPS2" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.HF_ASG_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_9997"]}"
+   to_port = "${var.ports["tcp_9997"]}"
+   source_sg_id = "${module.CPS2_ASG_SG.security_group_id}"
+}   
+
+# egress to Cluster peers on 9997 site 1, 2
+
+

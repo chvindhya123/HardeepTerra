@@ -1,0 +1,17 @@
+https://github.com/my2ndhead/ansible_playbook_splunk/wiki/Basic-Configuration
+https://github.com/alanwill/ansible-splunk
+https://github.com/d1vious/ansible-splunk-simple
+https://www.splunk.com/blog/2014/07/12/deploying-splunk-securely-with-ansible-config-management-part-1.html
+https://aws-quickstart.s3.amazonaws.com/quickstart-splunk-enterprise/doc/splunk-enterprise-on-the-aws-cloud.pdf
+https://github.com/Shaiou/Terraform-Splunk
+https://github.com/osu-itis/ansible-splunk
+
+https://www.splunk.com/index.php/predownload?d=progeneric
+
+http://aws-quickstart.s3.amazonaws.com/quickstart-splunk-enterprise/templates/splunk-enterprise.template
+
+http://sworisbreathing.github.io/techtalk-splunk-test-aws/#/56
+
+
+sudo yum install nano vim git mlocate python-pip -y
+sudo pip install ansible

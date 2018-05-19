@@ -1,0 +1,60 @@
+module "CM_ASG_SG" {
+   source = "../modules/security_group"
+   com = "ASG"
+   vars = "${var.cm}"
+}
+module "CM_ASG" {
+   source = "../modules/autoscaling_group"
+   vars = "${var.cm}"
+   security_groups = ["${module.CM_ASG_SG.security_group_id}"]
+#   user_data = "Hello"
+   vpc_subnets = "${var.subnets["cm"]}"
+}
+
+module "CM_ASG_SG_InRule_8089_HF" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.HF_ASG_SG.security_group_id}"
+} 
+module "CM_ASG_SG_InRule_8089_SHC" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.SHC_ASG_SG.security_group_id}"
+} 
+module "CM_ASG_SG_InRule_22" {
+   source = "../modules/security_group_rule_by_cidr"
+   sg_id  = "${module.CM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "${var.ports["ssh"]}"
+   to_port = "${var.ports["ssh"]}"
+   source_cidr_blocks = ["0.0.0.0/0"]
+}     
+module "CM_ASG_SG_InRule_Self" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CM_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "-1"
+   from_port = "0"
+   to_port = "65535"
+   source_sg_id = "${module.CM_ASG_SG.security_group_id}"
+}  
+
+module "CM_ASG_SG_OutRule_8089_LM" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.CM_ASG_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "${var.ports["tcp_8089"]}"
+   to_port = "${var.ports["tcp_8089"]}"
+   source_sg_id = "${module.LM_ASG_SG.security_group_id}"
+} 
+

@@ -1,0 +1,75 @@
+module "SHC_ALB_SG" {
+   source = "../modules/security_group"
+   name = "SearchCluster_LB_SG"
+   stack = "${var.stack_name}"
+   tier = "SearchHeadCluster"
+   vpc_id = "${var.vpc_id}"
+   description = "Security Group for ${var.stack_name} Search Head Cluster ELB"
+}
+
+module "SHC_ASG_SG" {
+   source = "../modules/security_group"
+   name = "SearchCluster_ASG_SG"
+   stack = "${var.stack_name}"
+   tier = "SearchHeadCluster"
+   vpc_id = "${var.vpc_id}"
+   description = "Security Group for ${var.stack_name} Search Head Cluster Nodes"
+}
+
+module "ALB_SearchHead" {
+   source = "../modules/load_balancer"
+   name = "SearchCluster-ALB"
+   internal = true
+   lb_type = "application"
+   subnet_ids = "${var.private_subnets}"
+   security_groups_ids = ["${module.SHC_ALB_SG.security_group_id}"]
+   stack = "${var.stack_name}"
+   tier = "SearchHeadCluster"   
+}
+
+module "SHC_ASG_SG_InRule_1" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.SHC_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "443"
+   to_port = "443"
+   source_sg_id = "${module.SHC_ALB_SG.security_group_id}"
+} 
+module "SHC_ASG_SG_InRule_2" {
+   source = "../modules/security_group_rule_by_cidr"
+   sg_id  = "${module.SHC_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "22"
+   to_port = "22"
+   source_cidr_blocks = ["0.0.0.0/0"]
+}     
+module "SHC_ASG_SG_InRule_Self" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.SHC_ASG_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "all "
+   from_port = "0"
+   to_port = "0"
+   source_sg_id = "${module.SHC_ASG_SG.security_group_id}"
+}  
+module "SHC_ALB_SG_InRule_1" {
+   source = "../modules/security_group_rule_by_cidr"
+   sg_id  = "${module.SHC_ALB_SG.security_group_id}"
+   rule_type = "ingress"
+   protocol = "tcp"
+   from_port = "443"
+   to_port = "443"
+   source_cidr_blocks = ["0.0.0.0/0"]
+}       
+module "SHC_ELB_SG_OutRule_1" {
+   source = "../modules/security_group_rule_by_sg"
+   sg_id  = "${module.SHC_ALB_SG.security_group_id}"
+   rule_type = "egress"
+   protocol = "tcp"
+   from_port = "443"
+   to_port = "443"
+   source_sg_id = "${module.SHC_ASG_SG.security_group_id}"
+}   
+
